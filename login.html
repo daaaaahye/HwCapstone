@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko">
+<body>
+    <h2>로그인</h2>
+    <input type="text" placeholder="이메일">
+    <input type="password" placeholder="비밀번호">
+    <button onclick="doLogin()">로그인</button>
+
+    <script>
+        function doLogin() {
+            // 실제로는 서버 검증이 필요하지만, 가짜로 로그인 상태 저장
+            localStorage.setItem('isLoggedIn', 'true');
+            alert('로그인 되었습니다.');
+            location.href = 'user_map.html'; // 다시 유저 홈으로 이동
+        }
+    </script>
+</body>
+</html>
