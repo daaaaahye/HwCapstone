@@ -1,0 +1,121 @@
+Swagger 문서화:
+from fastapi import FastAPI, HTTPException, Query
+from pydantic import BaseModel
+from typing import List, Optional
+from datetime import datetime
+
+app = FastAPI(
+    title="성동 안심 귀가 서비스 API",
+    description="캡스톤 프로젝트 - 위치 기반 안전 제보 및 관리 시스템",
+    version="1.0.0"
+)
+
+# --- 1. 데이터 모델 정의 (Schemas) ---
+
+class ReportCreate(BaseModel):
+    title: str
+    content: str
+    latitude: float
+    longitude: float
+    category: str  # 예: 가로등 고장, 어두운 골목, CCTV 사각지대
+    image_url: Optional[str] = None
+
+class ReportResponse(ReportCreate):
+    id: int
+    status: str  # 검토 중, 해결 완료
+    created_at: datetime
+    author_name: str
+
+class Comment(BaseModel):
+    report_id: int
+    content: str
+    author_name: str
+    created_at: datetime
+
+class AdminStatusUpdate(BaseModel):
+    status: str  # 검토 중, 해결 완료
+
+# --- 2. API 엔드포인트 (Endpoints) ---
+
+@app.post("/api/v1/reports", tags=["Report"], response_model=ReportResponse)
+async def create_report(report: ReportCreate):
+    """
+    **[위치 기반 실시간 위험 제보]**
+    - 현재 위치 또는 특정 위치를 지정하여 위험 요소를 제보합니다.
+    - 제보 즉시 DB에 저장되며 지도에 노출됩니다.
+    """
+    return {
+        "id": 1, "status": "검토 중", "created_at": datetime.now(), 
+        "author_name": "홍길동", **report.dict()
+    }
+
+@app.get("/api/v1/reports", tags=["Map"], response_model=List[ReportResponse])
+async def get_reports(
+    ne_lat: float = Query(..., description="북동단 위도"),
+    sw_lat: float = Query(..., description="남서단 위도")
+):
+    """
+    **[지도 통합형 커뮤니티]**
+    - 현재 지도 화면 범위 내에 있는 제보 마커들을 불러옵니다.
+    """
+    return []
+
+@app.get("/api/v1/reports/{report_id}", tags=["Map"], response_model=ReportResponse)
+async def get_report_detail(report_id: int):
+    """
+    **[제보 상세 내용 확인]**
+    - 마커 클릭 시 사이드 패널에 보여줄 상세 정보를 가져옵니다.
+    """
+    return {"id": report_id, "title": "가로등 고장", "status": "검토 중", ...}
+
+@app.get("/api/v1/reports/{report_id}/comments", tags=["Community"], response_model=List[Comment])
+async def get_comments(report_id: int):
+    """
+    **[이웃 간 정보 교류]**
+    - 제보물에 달린 댓글 목록을 가져옵니다.
+    """
+    return []
+
+@app.patch("/api/v1/admin/reports/{report_id}/status", tags=["Admin"], response_model=ReportResponse)
+async def update_report_status(report_id: int, update: AdminStatusUpdate):
+    """
+    **[권한별 맞춤 대시보드 - 관리자 전용]**
+    - 관리자가 제보의 처리 상태(검토 중 -> 해결 완료)를 업데이트합니다.
+    """
+    return {"id": report_id, "status": update.status, "message": "상태가 변경되었습니다."}
+
+에러 및 응답 구조 잡기:
+(성공)
+{
+  "success": true,
+  "data": { ... 결과 데이터 ... },
+  "message": "요청이 성공적으로 완료되었습니다."
+}
+
+(에러)
+-에러 구조 통일
+from fastapi import Request, HTTPException
+from fastapi.responses import JSONResponse
+
+# 커스텀 에러 구조 예시
+@app.exception_handler(HTTPException)
+async def custom_http_exception_handler(request: Request, exc: HTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "success": false,
+            "error": {
+                "code": exc.status_code,
+                "detail": exc.detail
+            }
+        },
+    )
+
+-프론트엔드에게 전송
+{
+  "success": false,
+  "error": {
+    "code": 404,
+    "detail": "해당 위치 정보를 찾을 수 없습니다."
+  }
+}
