@@ -1,71 +1,120 @@
 <!DOCTYPE html>
-<html lang='en'>
+<html lang='ko'>
 <head>
     <meta charset='utf-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <title>성동안심귀가맵</title>
-    <link rel='stylesheet' href='main.css'>
-    <style>
+    <title>성동안심귀가맵</title> <style>
+        * {
+            box-sizing: border-box;
+        }
         html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
+            margin: 0; padding: 0; width: 100%; height: 100%;
         }
         .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 52px;
-            background: #fff;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            padding: 0 16px;
-            z-index: 1000;
+            position: fixed; top: 0; left: 0; right: 0; height: 52px;
+            background: #fff; border-bottom: 1px solid #ddd;
+            display: flex; align-items: center; padding: 0 16px; z-index: 1000;
         }
         .logo {
             display: flex; align-items: center; gap: 8px;
             font-weight: 700; font-size: 15px; color: #1a56db; white-space: nowrap;
         }
+        .a-logo{
+            text-decoration: none; color: #1a56db;
+        }
         .logo svg { width: 22px; height: 22px; }
         .search-wrap {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 320px;
+            position: absolute; left: 50%; transform: translateX(-50%); width: 320px;
         }
         .search-wrap input {
-            width: 100%;
-            padding: 8px 40px 8px 14px;
-            border: 1px solid #ccc;
-            border-radius: 20px;
-            font-size: 13px;
-            outline: none;
-            background: #f9f9f9;
-            box-sizing: border-box;
+            width: 100%; padding: 8px 40px 8px 14px; border: 1px solid #ccc;
+            border-radius: 20px; font-size: 13px; outline: none; background: #f9f9f9; box-sizing: border-box;
         }
         .search-wrap input:focus { border-color: #1a56db; background: #fff; }
         .search-wrap .search-icon {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #888;
-            pointer-events: none;
+            position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: #888; pointer-events: none;
         }
         .header-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
         .btn-login {
-            padding: 6px 14px; border: 1px solid #1a56db; border-radius: 6px;
+            padding: 6px 14px; border: 1px solid #1a56db; border-radius: 6px; text-decoration: none;
             color: #1a56db; font-size: 13px; cursor: pointer; background: #fff;
         }
         .btn-login:hover { background: #eef2ff; }
         .btn-signup {
-            padding: 6px 14px; border: none; border-radius: 6px;
+            padding: 6px 14px; border: none; border-radius: 6px; text-decoration: none;
             background: #1a56db; color: #fff; font-size: 13px; cursor: pointer;
         }
         .btn-signup:hover { background: #1447c0; }
+        .btn-logout {
+            padding: 6px 14px; border: none; border-radius: 6px; text-decoration: none;
+            background: #1a56db; color: #fff; font-size: 13px; cursor: pointer;
+        }
+        .btn-logout:hover { background: #1447c0; }
+        .nickname-display{font-weight: bold;}
+
+        .filter-bar {
+            position: fixed; top: 62px; left: 16px; z-index: 900; display: flex; gap: 8px;
+        }
+        .sub-filter-bar {
+            position: fixed; top: 104px; left: 205px; z-index: 899; display: none; gap: 8px;
+        }
+        .filter-btn {
+            display: flex; align-items: center; gap: 5px;
+            padding: 6px 16px; border-radius: 20px; border: none;
+            font-size: 13px; font-weight: 600; cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,.18); transition: opacity .2s, transform .1s;
+            white-space: nowrap;
+        }
+        .filter-btn:active { transform: scale(.96); }
+        .filter-btn.inactive { opacity: .42; }
+        .filter-cctv   { background: #2563eb; color: #fff; }
+        .filter-street { background: #f59e0b; color: #fff; }
+        .filter-user   { background: #1f2937; color: #fff; }
+        .filter-user.sub-open { background: #e5e7eb; color: #374151; }
+        .filter-high   { background: #dc2626; color: #fff; }
+        .filter-warn   { background: #f97316; color: #fff; }
+
+        /* REPORT FAB */
+        .report-fab {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            z-index: 900; background: #dc2626; color: #fff;
+            border: none; border-radius: 24px; padding: 14px 30px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
+            box-shadow: 0 4px 166px rgba(220,38,38,.45);
+            display: flex; align-items: center; gap: 8px;
+            transition: background .2s, transform .15s;
+        }
+        .report-fab:hover { background: #b91c1c; transform: translateX(-50%) scale(1.03); }
+
+        /* MODAL */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 2000;
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: #fff; border-radius: 14px; padding: 28px 28px 22px;
+            width: 380px; max-width: 95vw; box-shadow: 0 8px 32px rgba(0,0,0,.18);
+        }
+        .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 18px; color: #111; }
+        .form-group { margin-bottom: 14px; }
+        .form-label { font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 5px; display: block; }
+        .form-input, .form-select, .form-textarea {
+            width: 100%; padding: 9px 12px; border: 1px solid #d1d5db;
+            border-radius: 8px; font-size: 13px; outline: none;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: #1a56db; }
+        .form-textarea { resize: vertical; min-height: 80px; }
+        .modal-actions { display: flex; gap: 8px; margin-top: 4px; }
+        .btn-cancel {
+            flex: 1; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px;
+            background: #fff; font-size: 13px; cursor: pointer; color: #374151;
+        }
+        .btn-submit {
+            flex: 2; padding: 10px; border: none; border-radius: 8px;
+            background: #dc2626; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer;
+        }
+        .btn-submit:hover { background: #b91c1c; }
     </style>
 </head>
 <body>
@@ -75,10 +124,9 @@
                 <path d="M 15 25 L 50 15 L 85 25 V 52 C 85 75 65 90 50 95 C 35 90 15 75 15 52 Z" fill="none" stroke="#1b64b0" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
                 <path d="M 50 70 C 60 55 64 49 64 42 C 64 34.3 57.7 28 50 28 C 42.3 28 36 34.3 36 42 C 36 49 40 55 50 70 Z M 50 37 A 5 5 0 1 0 50 47 A 5 5 0 1 0 50 37 Z" fill="#1b64b0" fill-rule="evenodd"/>
             </svg>
-            성동안심귀가맵
-        </div>
+            <a href="user_map.html" class="a-logo">성동안심귀가맵</a> </div>
         <div class="search-wrap">
-            <input type="text" placeholder="위치 검색... (예: 왕십리역)">
+            <input type="text" placeholder="위치 검색... (예: 역 이름)">
             <span class="search-icon">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -86,22 +134,392 @@
             </span>
         </div>
         <div class="header-right">
-            <button class="btn-login">로그인</button>
-            <button class="btn-signup">회원가입</button>
+            <a href="login.html" class="btn-login" id="btn-login">로그인</a>
+            <a href="sign_up.html" class="btn-signup" id="btn-signup">회원가입</a>
+            <span id="nickname-display" class="nickname-display" style="display: none;"></span>
+            <button id="btn-logout" class="btn-logout" style="display: none;">로그아웃</button>
         </div>
     </header>
 
-    <!-- 지도를 담을 영역. 크기 지정은 필수야. 지정 안 하면 지도가 안 보여. -->
-    <div id="map" style="width: 100%; height: 100vh;"></div>
-    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=783dd155fc3484d1a47feb7eff18969b"></script>
-    <script>
-        var container = document.getElementById('map'); // 지도를 담을 영역
-        var options = { 
-            center: new kakao.maps.LatLng(37.55896810579871, 127.0494307885725), // 기본 중심좌표
-            level: 3 // 지도의 확대 레벨
-        };
+    <div class="filter-bar">
+        <button class="filter-btn filter-cctv active" data-type="cctv" onclick="toggleFilter(this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+                <rect x="2" y="7" width="15" height="10" rx="2"/><path d="M17 9l5-3v10l-5-3"/>
+            </svg>
+            CCTV
+        </button>
+        <button class="filter-btn filter-street active" data-type="street" onclick="toggleFilter(this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+                <line x1="12" y1="2" x2="12" y2="22"/><path d="M5 7h7"/><circle cx="5" cy="7" r="2" fill="#fff"/>
+            </svg>
+            가로등
+        </button>
+        <button class="filter-btn filter-user active" id="userReportBtn" onclick="toggleUserReport()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+            </svg>
+            유저 제보
+        </button>
+    </div>
 
-        var map = new kakao.maps.Map(container, options); // 지도 생성
+    <div class="sub-filter-bar" id="subFilterBar">
+        <button class="filter-btn filter-high active" data-type="high" onclick="toggleFilter(this)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l10 18H2z"/></svg>
+            고위험
+        </button>
+        <button class="filter-btn filter-warn active" data-type="warn" onclick="toggleFilter(this)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l10 18H2z"/></svg>
+            주의
+        </button>
+    </div>
+
+    <div id="map" style="width: 100%; height: 100vh;">
+        <button class="report-fab" id="btn-open-report" onclick="openModal()">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+            위험 제보 등록
+        </button>
+    </div>
+    
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=783dd155fc3484d1a47feb7eff18969b&libraries=services,clusterer"></script>
+
+    <form id="reportForm">
+        <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-title">⚠️ 위험 제보 등록</div>
+            <div class="form-group">
+            <label class="form-label">제보 유형</label>
+            <select class="form-select" id="reportType">
+                <option value="고장">고장(CCTV, 가로등)</option>
+                <option value="어두움">어두움(가로등 미설치)</option>
+                <option value="사각지대">사각지대(CCTV 미설치)</option>
+                <option value="인적드문">인적드문</option>
+                <option value="기타">기타</option>
+            </select>
+            </div>
+            <div class="form-group">
+            <label class="form-label">위험 유형</label>
+            <select class="form-select" id="riskLevel">
+                <option value="HIGH">고위험</option>
+                <option value="CAUTION">주의</option>
+            </select>
+            </div>
+            <div class="form-group">
+            <label class="form-label">위치</label>
+            <input type="text" id="locationInput" class="form-input" placeholder="이곳을 클릭하여 지도에서 위치를 선택하세요" readonly style="cursor: pointer;">
+            <input type="hidden" id="reportLat">
+            <input type="hidden" id="reportLng">
+            </div>
+            <div class="form-group">
+            <label class="form-label">제목</label>
+            <input class="form-input" id="reportTitle" type="text" placeholder="제목을 입력해주세요" required>
+            </div>
+            <div class="form-group">
+            <label class="form-label">내용</label>
+            <textarea class="form-textarea" id="reportContent" placeholder="위험 상황을 자세히 설명해주세요" required></textarea>
+            </div>
+            <div class="modal-actions">
+            <button class="btn-cancel" type="reset" onclick="closeModal()">취소</button>
+            <button class="btn-submit" type="submit">등록하기</button>
+            </div>
+        </div>
+        </div>
+    </form>
+
+    <script>
+        // 1. 전역 변수 세팅
+        let map; 
+        const geocoder = new kakao.maps.services.Geocoder();
+        let isPickingLocation = false;
+        let subOpen = false;
+        let clusterer;
+
+        // 마커 종류별 독립 보관용 바구니(배열)
+        let currentMarkers = []; // 유저 제보 마커 바구니
+        let cctvMarkers = [];    // CCTV 마커 바구니
+        let streetMarkers = [];  // 가로등 마커 바구니
+
+        // 2. 페이지가 켜질 때 실행되는 초기화 로직
+        window.addEventListener('DOMContentLoaded', function() {
+            
+            // --- [A] 로그인 UI 세팅 ---
+            const token = localStorage.getItem('myToken');
+            const nickname = localStorage.getItem('nickname');
+            const loginBtn = document.getElementById('btn-login');
+            const signupBtn = document.getElementById('btn-signup');
+            const userNameDisplay = document.getElementById('nickname-display');
+            const logoutBtn = document.getElementById('btn-logout');
+
+            if (token) {
+                if(loginBtn) loginBtn.style.display = 'none';
+                if(signupBtn) signupBtn.style.display = 'none';
+                if(userNameDisplay) {
+                    userNameDisplay.innerText = `${nickname}님`;
+                    userNameDisplay.style.display = 'inline';
+                }
+                if(logoutBtn) logoutBtn.style.display = 'inline';
+            }
+
+            // --- [B] 카카오맵 지도 생성 ---
+            const container = document.getElementById('map');
+            const options = { 
+                center: new kakao.maps.LatLng(37.56127016424321, 127.03710677245991), 
+                level: 2
+            };
+            map = new kakao.maps.Map(container, options);
+
+            // 마커 클러스터러를 생성합니다 
+            clusterer = new kakao.maps.MarkerClusterer({
+                map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체 
+                averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정 
+                minLevel: 3 // 클러스터 할 최소 지도 레벨 (이 레벨보다 축소해야 클러스터링 됨)
+            });
+
+            // --- [C] 지도 클릭 이벤트 (위치 추출) ---
+            const locationInput = document.getElementById('locationInput');
+            const modalOverlay = document.getElementById('modalOverlay');
+
+            locationInput.addEventListener('click', function() {
+                modalOverlay.classList.remove('show'); 
+                isPickingLocation = true; 
+                alert('지도에서 제보할 위치를 클릭해주세요.');
+            });
+
+            kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
+                if (!isPickingLocation) return; 
+
+                const latLng = mouseEvent.latLng;
+                const lat = latLng.getLat();
+                const lng = latLng.getLng();
+
+                geocoder.coord2Address(lng, lat, function(result, status) {
+                    if (status === kakao.maps.services.Status.OK) {
+                        let finalAddress = result[0].road_address ? result[0].road_address.address_name : result[0].address.address_name;
+                        locationInput.value = finalAddress; 
+                        document.getElementById('reportLat').value = lat; 
+                        document.getElementById('reportLng').value = lng; 
+                        modalOverlay.classList.add('show');
+                        isPickingLocation = false;
+                    } else {
+                        alert('주소를 가져오는데 실패했습니다.');
+                    }
+                });
+            });
+
+            // --- [D] 팩트: 지도 켜지자마자 유저제보, CCTV, 가로등 싹 다 실시간 로드 ---
+            loadReportsToMap();
+            loadPublicDataToMap();
+        });
+
+        // 3. 로그아웃 로직
+        document.getElementById('btn-logout').addEventListener('click', function() {
+            localStorage.removeItem('myToken');
+            localStorage.removeItem('nickname');
+            alert('로그아웃 되었습니다.');
+            window.location.reload(); 
+        });
+
+        // 4. 완벽 조립된 마커 제어용 필터 함수 (setMap 기반 통제)
+       function toggleFilter(btn) {
+            const type = btn.dataset.type;
+            btn.classList.toggle('active');
+            btn.classList.toggle('inactive');
+            const show = btn.classList.contains('active');
+
+            //  팩트: 클러스터링 상태에서는 setMap 대신 clusterer의 add/remove를 쓴다!
+            if (type === 'cctv') {
+                if (show) clusterer.addMarkers(cctvMarkers);
+                else clusterer.removeMarkers(cctvMarkers);
+            } else if (type === 'street') {
+                if (show) clusterer.addMarkers(streetMarkers);
+                else clusterer.removeMarkers(streetMarkers);
+            } else if (type === 'high') {
+                // 고위험 마커만 골라내기
+                const highMarkers = currentMarkers.filter(m => m.risk_level === 'HIGH');
+                if (show) clusterer.addMarkers(highMarkers);
+                else clusterer.removeMarkers(highMarkers);
+            } else if (type === 'warn') {
+                // 주의 마커만 골라내기
+                const warnMarkers = currentMarkers.filter(m => m.risk_level === 'CAUTION');
+                if (show) clusterer.addMarkers(warnMarkers);
+                else clusterer.removeMarkers(warnMarkers);
+            }
+        }
+
+        function toggleUserReport() {
+            const btn = document.getElementById('userReportBtn');
+            const sub = document.getElementById('subFilterBar');
+            subOpen = !subOpen;
+            sub.style.display = subOpen ? 'flex' : 'none';
+            btn.classList.toggle('sub-open', subOpen);
+        }
+
+        function openModal() {
+            const token = localStorage.getItem('myToken');
+            if (!token) {
+                alert('로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다.');
+                window.location.href = 'login.html'; 
+            } else {
+                document.getElementById('modalOverlay').classList.add('show');
+            }
+        }
+
+        function closeModal() { 
+            document.getElementById('modalOverlay').classList.remove('show'); 
+        }
+
+        // 5. 서버에 제보 데이터 보내기
+        document.getElementById('reportForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); 
+
+            const lat = document.getElementById('reportLat').value;
+            const lng = document.getElementById('reportLng').value;
+            
+            if (!lat || !lng) {
+                alert('위치 인풋창을 눌러 지도에서 위치를 선택해주세요.');
+                return;
+            }
+
+            const token = localStorage.getItem('myToken');
+            if (!token) {
+                alert('로그인이 만료되었습니다.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const reportData = {
+                type: document.getElementById('reportType').value,
+                risk_level: document.getElementById('riskLevel').value,
+                title: document.getElementById('reportTitle').value,
+                content: document.getElementById('reportContent').value,
+                latitude: parseFloat(lat), 
+                longitude: parseFloat(lng)
+            };
+
+            try {
+                const response = await fetch("http://localhost:8000/reports", {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
+                    body: JSON.stringify(reportData)
+                });
+
+                if (response.ok) {
+                    alert('위험 지역 제보가 완료되었습니다!');
+                    this.reset(); 
+                    closeModal();
+                    loadReportsToMap(); //  새로고침 없이 마커 실시간 갱신!
+                } else if (response.status === 401) {
+                    alert('로그인 유효기간이 만료되었습니다. 다시 로그인해주세요.');
+                    localStorage.removeItem('myToken');
+                    localStorage.removeItem('nickname');
+                    window.location.href = 'login.html';
+                } else {
+                    alert(`제보 실패`);
+                }
+            } catch (err) {
+                console.error('통신 에러:', err);
+            }
+        });
+
+        // 6. 유저 제보 마커 렌더링 함수
+        async function loadReportsToMap() {
+            try {
+                const response = await fetch("http://localhost:8000/reports");
+                if (!response.ok) throw new Error('제보 데이터를 불러오지 못했습니다.');
+                
+                const reports = await response.json();
+
+                // 1. 기존 유저 마커 바구니와 클러스터러 비우기
+                clusterer.removeMarkers(currentMarkers); // 클러스터에서 유저 제보 마커만 쏙 빼기
+                currentMarkers = []; // 바구니 비우기
+
+                reports.forEach(report => {
+                    let markerImageUrl = '';
+                    if (report.risk_level === 'HIGH') {
+                        markerImageUrl = './images/siren.svg'; 
+                    } else if (report.risk_level === 'CAUTION') {
+                        markerImageUrl = './images/warning.svg'; 
+                    } else {
+                        markerImageUrl = 'https://t1.daumcdn.net/mapjsapi/images/marker_star.png';
+                    }
+
+                    const imageSize = new kakao.maps.Size(24, 35); 
+                    const markerImage = new kakao.maps.MarkerImage(markerImageUrl, imageSize);
+                    const markerPosition = new kakao.maps.LatLng(report.latitude, report.longitude);
+
+                    const marker = new kakao.maps.Marker({
+                        // 팩트 체크: map: map을 지워야 해! 지워야 클러스터러가 통제권을 가져감.
+                        position: markerPosition, 
+                        image: markerImage,     
+                        title: report.type      
+                    });
+                    
+                    marker.risk_level = report.risk_level;
+                    currentMarkers.push(marker); // 바구니에 담기
+                });
+
+                // 3. 바구니에 모인 마커들을 클러스터러에 한 방에 투척!
+                clusterer.addMarkers(currentMarkers);
+
+            } catch (err) {
+                console.error('마커 렌더링 에러:', err);
+            }
+        }
+
+        // 7. 공공데이터(CCTV, 가로등) 마커 렌더링 함수
+        async function loadPublicDataToMap() {
+            try {
+                // --- CCTV 로드 ---
+                const cctvRes = await fetch("http://localhost:8000/cctvs");
+                if (cctvRes.ok) {
+                    const cctvs = await cctvRes.json();
+                    
+                    // 1. 팩트: 기존 마커를 싹 지울 때, 클러스터러에서도 지워줘야 해!
+                    clusterer.removeMarkers(cctvMarkers); 
+                    cctvMarkers = [];
+
+                    cctvs.forEach(data => {
+                        const marker = new kakao.maps.Marker({
+                            //  핵심 1: 여기서 map: map 옵션을 반드시 지워야 클러스터링이 먹힌다!
+                            position: new kakao.maps.LatLng(data.latitude, data.longitude),
+                            image: new kakao.maps.MarkerImage('./images/cctv.svg', new kakao.maps.Size(24, 35))
+                        });
+                        cctvMarkers.push(marker); // 바구니에 담기
+                    });
+                    
+                    // 핵심 2: 바구니에 다 담았으면 클러스터러에 한 방에 투척!
+                    clusterer.addMarkers(cctvMarkers);
+                }
+
+                // --- 가로등 로드 ---
+                const streetRes = await fetch("http://localhost:8000/lights");
+                if (streetRes.ok) {
+                    const streetlights = await streetRes.json();
+                    
+                    // 1. 팩트: 기존 가로등 마커를 클러스터러에서 제거하고 바구니 비우기
+                    clusterer.removeMarkers(streetMarkers);
+                    streetMarkers = [];
+
+                    streetlights.forEach(data => {
+                        const marker = new kakao.maps.Marker({
+                            //  핵심 1: 역시 map: map 옵션 삭제!
+                            position: new kakao.maps.LatLng(data.latitude, data.longitude),
+                            image: new kakao.maps.MarkerImage('./images/light.svg', new kakao.maps.Size(24, 35))
+                        });
+                        streetMarkers.push(marker); // 바구니에 담기
+                    });
+                    
+                    //  핵심 2: 클러스터러에 투척!
+                    clusterer.addMarkers(streetMarkers);
+                }
+            } catch (err) {
+                console.error('공공데이터 로드 에러:', err);
+            }
+        }
     </script>
 </body>
 </html>
